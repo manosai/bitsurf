@@ -62,8 +62,8 @@ def send_payment(request):
 		conn = aws_connect()
 		transaction_dic = {}
 		print request.GET["bitcoin_addr"]
-		bitcoin_address = str(request.GET["bitcoin_addr"]) 
-		amount = str(request.GET["amount"])
+		bitcoin_address = request.GET["bitcoin_addr"]
+		amount = request.GET["amount"]
 		account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
 		print os.environ['coinbase_api_key'], bitcoin_address, amount
 		transaction = account.send(bitcoin_address, float(amount))
