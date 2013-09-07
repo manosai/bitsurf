@@ -62,14 +62,14 @@ def send_payment(request):
 		conn = aws_connect()
 		transaction_dic = {}
 		bitcoin_address = request.GET["bitcoin_addr"]
-		amount = request.GET["amount"]
+		amount = float(request.GET["amount"])
 		account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
 		transaction = account.send(bitcoin_address, float(amount))
 		json_response = json.dumps({"transaction_status":str(transaction.status)})
 		user_domain = conn.get_domain('user_table')
 		user = user_domain.get_item(bitcoin_address, consistent_read=True)
-		user['total_earned'] = str(float(user['total_earned']) + float(transaction_amount))
-		user['current_balance'] = str(float(user['current_balance']) - float(transaction_amount))
+		user['total_earned'] = str(float(user['total_earned']) + amount)
+		user['current_balance'] = str(float(user['current_balance']) - amount)
 		user.save()
 		return HttpResponse(json_response)
 
