@@ -3,13 +3,14 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 
-import boto.sdb.connection.SDBConnection as SDBConnection
+import boto.sdb
 import json
 import os
 
 def aws_connect():
-	conn = SDBConnection(aws_access_key_id=os.environ['aws_access_key_id'], \
-			aws_secret_access_key=os_environ['aws_secret_access_key'])
+	conn = boto.sdb.connect_to_region('us-west-2',\
+		aws_access_key_id=os.environ['aws_access_key_id'], \
+		aws_secret_access_key=os_environ['aws_secret_access_key'])
 	return conn
 
 def home(request):
