@@ -30,7 +30,9 @@ def get_user(request):
 			json_response = json.dumps(attrs)
 		else:
 			current_balance = current_attrs['current_balance']
-			json_response = json.dumps({'current_balance':current_balance})
+			total_earned = current_attrs['total_earned']
+			json_response = json.dumps({'current_balance':current_balance, \
+				'total_earned':total_earned})
 		return HttpResponse(json_response)
 
 # New user signup
