@@ -31,7 +31,7 @@ def add_user(request):
 		return HttpResponse(json_response)
 
 def get_clients(request): 
-	if request.method = 'GET': 
+	if request.method == 'GET': 
 		conn = aws_connect()
 		business_domain = conn.get_domain('business_table')
 		query = 'select * from `business_table`' 
@@ -41,3 +41,4 @@ def get_clients(request):
 			output.append(attrs['website'])	
 		json_response = json.dumps(output)
 		return HttpResponse(json_response)
+
