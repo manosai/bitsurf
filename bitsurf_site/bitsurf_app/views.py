@@ -22,7 +22,7 @@ def get_user(request):
 	if request.method == 'GET':
 		conn = aws_connect()
 		user_domain = conn.get_domain('user_table')
-		bitcoin_address = request.GET['bitcoin_addr']
+		bitcoin_address = str(request.GET['bitcoin_addr'])
 		current_attrs = user_domain.get_item(bitcoin_address, consistent_read=True)
 		if  current_attrs == None:
 			attrs = {'current_balance': 0, 'total_earned':0}
@@ -64,7 +64,7 @@ def send_payment(request):
 		bitcoin_address = request.GET["bitcoin_addr"]
 		amount = float(request.GET["amount"])
 		account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
-		transaction = account.send(bitcoin_address, float(amount))
+		transaction = account.send(bitcoin_address, amount)
 		json_response = json.dumps({"transaction_status":str(transaction.status)})
 		user_domain = conn.get_domain('user_table')
 		user = user_domain.get_item(bitcoin_address, consistent_read=True)
