@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 import boto.sdb
+from coinbase import CoinbaseAccount
 
 def aws_connect():
 	conn = boto.sdb.connect_to_region('us-west-1',\
@@ -55,23 +56,15 @@ def send_payment(request):
 	if request.method == 'GET':
 		conn = aws_connect()
 		transaction_dic = {}
-		transaction_bitcoin_address = str(request.GET["bitcoin_addr"])
-		transaction_dic["to"] = transaction_bitcoin_address 
-		transaction_amount = str(request.GET["amount"])
-		transaction_dic["amount"] = transaction_amount
-		request_dic = {}
-		request_dic["api_key"] = os.environ['coinbase_api_key']
-		request_dic["transaction"] = transaction_dic
-		r = requests.post("https://coinbase.com/api/v1/transactions/send_money", \
-			data=json.dumps(request_dic))
-		print request_dic
-		print r
-		print r.json()
-		json_response = json.dumps({"success":r.json()["success"]})
+		bitcoin_address = str(request.GET["bitcoin_addr"]) 
+		amount = str(request.GET["amount"])
+		account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
+		transaction = account.send(bitcoin_address, float(amount))
+		json_response = json.dumps({"transaction_status":transaction})
 		user_domain = conn.get_domain('user_table')
-		user = user_domain.get_item(transation_bitcoin_address, consistent_read=True)
-		user['total_earned'] = float(user['total_earned']) + float(transaction_amount)
-		user['current_balance'] = float(user['current_balance']) - float(transaction_amount)
+		user = user_domain.get_item(bitcoin_address, consistent_read=True)
+		user['total_earned'] = str(float(user['total_earned']) + float(transaction_amount))
+		user['current_balance'] = str(float(user['current_balance']) - float(transaction_amount))
 		user.save()
 		return HttpResponse(json_response)
 
