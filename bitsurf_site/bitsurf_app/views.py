@@ -38,17 +38,18 @@ def add_user(request):
 	pass
 
 # Return list of all clients
-def get_clients(request): 
-	if request.method == 'GET': 
-		conn = aws_connect()
-		business_domain = conn.get_domain('business_table')
-		query = 'select * from `business_table`' 
-		rs = business_domain.select(query)
-		output = []
-		for attrs in rs: 
-			output.append(attrs['website'])	
-		json_response = json.dumps(output)
-		return HttpResponse(json_response)
+def get_clients(request):
+    if request.method == 'GET':
+        conn = aws_connect()
+        business_domain = conn.get_domain('business_table')
+        query = 'select * from `business_table`'
+        rs = business_domain.select(query)
+        output = {}
+        for attrs in rs:
+            link = attrs['website']
+            output[link] = attrs['rate']
+        json_response = json.dumps(output)
+        return HttpResponse(json_response)
 
 def send_payment(request):
 	if request.method == 'GET':
