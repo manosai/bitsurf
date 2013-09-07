@@ -19,7 +19,7 @@ def add_user(request):
 	if request.method == 'GET':
 		conn = aws_connect()
 		user_domain = conn.get_domain('user_table')
-		bitcoin_address = request['bitcoin_address']
+		bitcoin_address = request['bitcoin_addr']
 		current_attrs = user_domain.get_item(bitcoin_address, consistent_read=True)
 		if  current_attrs == None:
 			attrs = {'': 0}
