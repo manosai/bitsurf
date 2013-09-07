@@ -7,7 +7,7 @@ from django.conf import settings
 
 urlpatterns = patterns('',
 	url(r'^$', 'bitsurf_app.views.home'), 
-	url(r'^login/', 'bitsurf_app.views.add_user'), 
+	url(r'^login/', 'bitsurf_app.views.get_user'), 
 	url(r'^check-site/', 'bitsurf_app.views.get_clients')
 )
 
