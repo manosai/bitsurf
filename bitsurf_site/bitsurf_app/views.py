@@ -19,23 +19,23 @@ def home(request):
 def add_user(request):
 	if request.method == 'GET':
 		conn = aws_connect()
-		user_domain = conn.get_domain('user-table')
-		bitcoin_address = request['bitcoin-addr']
+		user_domain = conn.get_domain('userTable')
+		bitcoin_address = request['bitcoinAddr']
 		current_attrs = user_domain.get_item(bitcoin_address, consistent_read=True)
 		if  current_attrs == None:
-			attrs = {'current-balance': 0}
+			attrs = {'currentBalance': 0}
 			user_domain.put_attributes(wallet_id, attrs)
 			json_response = json.dumps(attrs)
 		else:
-			current_balance = current_attrs['current-balance']
-			json_response = json.dumps({'current-balance':current_balance})
+			current_balance = current_attrs['currentBalance']
+			json_response = json.dumps({'currentBalance':current_balance})
 		return HttpResponse(json_response)
 
 def get_clients(request): 
 	if request.method == 'GET': 
 		conn = aws_connect()
-		business_domain = conn.get_domain('business-table')
-		query = 'select * from `business-table`' 
+		business_domain = conn.get_domain('businessTable')
+		query = 'select * from `businessTable`' 
 		rs = business_domain.select(query)
 		output = []
 		for attrs in rs: 
