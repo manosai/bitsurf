@@ -68,7 +68,7 @@ def update_balance(request):
 		# lookup website's payout rate
 		business_domain = conn.get_domain('business_table')
 		curr_business = business_domain.get_item(website, consistent_read=True)
-		amount = curr_business['rate']
+		amount = float(curr_business['rate'])
 			
 		return send_payment(bitcoin_address, amount)
 
