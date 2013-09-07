@@ -8,7 +8,7 @@ import json
 import os
 
 def aws_connect():
-	conn = boto.sdb.connect_to_region('us-west-2',\
+	conn = boto.sdb.connect_to_region('us-west-1',\
 		aws_access_key_id=os.environ['aws_access_key_id'], \
 		aws_secret_access_key=os.environ['aws_secret_access_key'])
 	return conn
