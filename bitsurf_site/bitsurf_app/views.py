@@ -61,6 +61,7 @@ def send_payment(request):
 	if request.method == 'GET':
 		conn = aws_connect()
 		transaction_dic = {}
+		print request.GET["bitcoin_addr"]
 		bitcoin_address = str(request.GET["bitcoin_addr"]) 
 		amount = str(request.GET["amount"])
 		account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
