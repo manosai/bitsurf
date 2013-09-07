@@ -54,27 +54,44 @@ def get_clients(request):
         rs = business_domain.select(query)
         output = {}
         for attrs in rs:
-            link = attrs['website']
-            output[link] = attrs['rate']
+            output[rs] = attrs['rate']
         json_response = json.dumps(output)
         return HttpResponse(json_response)
 
-# Send payment via Coinbase API
-def send_payment(request):
-	if request.method == 'GET':
+# Update user balance and 
+def update_balance(request):
+	if request.method == 'GET': 
 		conn = aws_connect()
-		transaction_dic = {}
 		bitcoin_address = request.GET["bitcoin_addr"]
-		amount = float(request.GET["amount"])
-		account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
-		transaction = account.send(bitcoin_address, amount)
-		json_response = json.dumps({"transaction_status":str(transaction.status)})
-		user_domain = conn.get_domain('user_table')
-		user = user_domain.get_item(bitcoin_address, consistent_read=True)
-		user['total_earned'] = str(float(user['total_earned']) + amount)
-		user['current_balance'] = str(float(user['current_balance']) - amount)
-		user.save()
-		return HttpResponse(json_response)
+		website = request.GET["website"]
+
+		# lookup website's payout rate
+		business_domain = conn.get_domain('business_table')
+		curr_business = business_domain.get_item(website, consistent_read=True)
+		amount = curr_business['rate']
+			
+		send_payment(bitcoin_address, amount)
+
+# Send payment via Coinbase API
+def send_payment(bitcoin_address, amount):
+	conn = aws_connect()
+	transaction_dic = {}
+	account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
+	transaction = account.send(bitcoin_address, amount)
+	transaction_dic['transaction_status'] = str(transaction.status))
+	
+	# add to user's balance 
+	user_domain = conn.get_domain('user_table')
+	user = user_domain.get_item(bitcoin_address, consistent_read=True)
+	user['total_earned'] = str(float(user['total_earned']) + amount)
+	user['current_balance'] = str(float(user['current_balance']) - amount)
+	user.save()
+	
+	transaction_dic['total_earned'] = user['total_earned']
+	transaction_dic['current_balance'] = user['current_balance']
+	json_response = json.dumps(transaction_dic)
+
+	return HttpResponse(json_response)
 
 
 
