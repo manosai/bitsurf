@@ -63,7 +63,7 @@ def send_payment(request):
 		request_dic["transaction"] = transaction_dic
 		r = requests.post("https://coinbase.com/api/v1/transactions/send_money", \
 			data=request_dic)
-		json_response = json.dumps({"success":r.json()["success"})
+		json_response = json.dumps({"success":r.json()["success"])
 		user_domain = conn.get_domain('user_table')
 		user = user_domain.get_item(transation_bitcoin_address, consistent_read=True)
 		user['total_earned'] = float(user['total_earned']) + float(transaction_amount)
