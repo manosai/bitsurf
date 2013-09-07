@@ -1,4 +1,5 @@
 Django==1.5.2
-django-bootstrap==0.2.4
+argparse==1.2.1
+boto==2.12.0
 django-bootstrap-toolkit==2.15.0
 wsgiref==0.1.2

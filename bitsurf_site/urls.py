@@ -6,6 +6,8 @@ from django.conf import settings
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-	url(r'^$', 'bitsurf_app.views.home')
+	url(r'^$', 'bitsurf_app.views.home'), 
+	url(r'^login/', 'bitsurf_app.views.add_user'), 
+	url(r'^check-site/', 'bitsurf_app.views.get_clients')
 )
 

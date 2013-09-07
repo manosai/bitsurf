@@ -20,7 +20,7 @@ def add_user(request):
 	if request.method == 'GET':
 		conn = aws_connect()
 		user_domain = conn.get_domain('user_table')
-		bitcoin_address = request['bitcoin_address']
+		bitcoin_address = request['bitcoin_addr']
 		current_attrs = user_domain.get_item(bitcoin_address, consistent_read=True)
 		if  current_attrs == None:
 			attrs = {'': 0}
@@ -32,7 +32,7 @@ def add_user(request):
 		return HttpResponse(json_response)
 
 def get_clients(request): 
-	if request.method = 'GET': 
+	if request.method == 'GET': 
 		conn = aws_connect()
 		business_domain = conn.get_domain('business_table')
 		query = 'select * from `business_table`' 
@@ -42,3 +42,4 @@ def get_clients(request):
 			output.append(attrs['website'])	
 		json_response = json.dumps(output)
 		return HttpResponse(json_response)
+
