@@ -26,7 +26,7 @@ def get_user(request):
 		current_attrs = user_domain.get_item(bitcoin_address, consistent_read=True)
 		if  current_attrs == None:
 			attrs = {'current_balance': 0}
-			user_domain.put_attributes(wallet_id, attrs)
+			user_domain.put_attributes(bitcoin_address, attrs)
 			json_response = json.dumps(attrs)
 		else:
 			current_balance = current_attrs['current_balance']
