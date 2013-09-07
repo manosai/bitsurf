@@ -59,7 +59,7 @@ def send_payment(request):
 		bitcoin_address = str(request.GET["bitcoin_addr"]) 
 		amount = str(request.GET["amount"])
 		account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
-		print api_key, bitcoin_address, amount
+		print os.environ['coinbase_api_key'], bitcoin_address, amount
 		transaction = account.send(bitcoin_address, float(amount))
 		json_response = json.dumps({"transaction_status":transaction})
 		user_domain = conn.get_domain('user_table')
