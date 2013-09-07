@@ -25,14 +25,12 @@ def get_user(request):
 		bitcoin_address = str(request.GET['bitcoin_addr'])
 		current_attrs = user_domain.get_item(bitcoin_address, consistent_read=True)
 		if  current_attrs == None:
-			attrs = {'current_balance': 0, 'total_earned':0}
+			attrs = {'total_earned':0}
 			user_domain.put_attributes(bitcoin_address, attrs)
 			json_response = json.dumps(attrs)
 		else:
-			current_balance = current_attrs['current_balance']
 			total_earned = current_attrs['total_earned']
-			json_response = json.dumps({'current_balance':current_balance, \
-				'total_earned':total_earned})
+			json_response = json.dumps({'total_earned':total_earned})
 		return HttpResponse(json_response)
 
 # New user signup
@@ -84,11 +82,9 @@ def send_payment(bitcoin_address, amount):
 	user_domain = conn.get_domain('user_table')
 	user = user_domain.get_item(bitcoin_address, consistent_read=True)
 	user['total_earned'] = str(float(user['total_earned']) + amount)
-	user['current_balance'] = str(float(user['current_balance']) - amount)
 	user.save()
 	
 	transaction_dic['total_earned'] = user['total_earned']
-	transaction_dic['current_balance'] = user['current_balance']
 	json_response = json.dumps(transaction_dic)
 
 	return HttpResponse(json_response)
