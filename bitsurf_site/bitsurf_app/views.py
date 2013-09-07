@@ -70,7 +70,7 @@ def update_balance(request):
 		curr_business = business_domain.get_item(website, consistent_read=True)
 		amount = curr_business['rate']
 			
-		send_payment(bitcoin_address, amount)
+		return send_payment(bitcoin_address, amount)
 
 # Send payment via Coinbase API
 def send_payment(bitcoin_address, amount):
