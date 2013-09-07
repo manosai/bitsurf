@@ -52,8 +52,8 @@ def get_clients(request):
         rs = business_domain.select(query)
         output = {}
         for attrs in rs:
-			website = rs.item_name
-        output[website] = attrs['rate']
+			website = attrs.name
+			output[website] = attrs['rate']
         json_response = json.dumps(output)
         return HttpResponse(json_response)
 
