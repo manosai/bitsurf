@@ -89,7 +89,8 @@ def send_payment(bitcoin_address, amount):
 	json_response = json.dumps(transaction_dic)
 
 	return HttpResponse(json_response)
-
+	
+#Do later
 def business_register(request):
 	if request.method == 'POST':
 		website = request.POST['website']
@@ -97,15 +98,14 @@ def business_register(request):
 		business_domain = conn.get_domain('business_table')
 		bus_attrs = business_domain.get_item(website, consistent_read=True)
 		if bus_attrs != None:
-			return render_to_response('', {}, RequestContext(request))
+			return render_to_response('admin_home.html', {}, RequestContext(request))
 		else:
 			bus_attrs = {'rate':request.POST['rate']}
 			business_domain.put_attributes(website, bus_attrs)
 			return HttpResponseRedirect("https://coinbase.com/checkouts/321d8ede9082981b1ea1c79cd261d66d")
-
+#Do later
 def business_home(request):
 	if request.method == 'GET':
-
 		return render_to_response('admin_home.html', {'website': website, \
 			'funds':funds, 'rate':rate}, RequestContext(request))
 
