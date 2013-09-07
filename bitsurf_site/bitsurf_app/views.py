@@ -63,8 +63,9 @@ def send_payment(request):
 		request_dic["api_key"] = os.environ['coinbase_api_key']
 		request_dic["transaction"] = transaction_dic
 		r = requests.post("https://coinbase.com/api/v1/transactions/send_money", \
-			data=request_dic)
+			data=json.dumps(request_dic))
 		print request_dic
+		print r
 		print r.json()
 		json_response = json.dumps({"success":r.json()["success"]})
 		user_domain = conn.get_domain('user_table')
