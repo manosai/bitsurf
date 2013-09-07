@@ -12,7 +12,6 @@ def aws_connect():
 	conn = boto.sdb.connect_to_region('us-west-1',\
 		aws_access_key_id=os.environ['aws_access_key_id'], \
 		aws_secret_access_key=os.environ['aws_secret_access_key'])
-	print os.environ['aws_access_key_id'], os.environ['aws_secret_access_key']
 	return conn
 
 def home(request):
@@ -36,7 +35,13 @@ def get_user(request):
 
 # New user signup
 def add_user(request):
-	pass
+	if request.method == 'GET':
+		post_data = {}
+		post_data["user"] = {"email":request.GET['email'], \
+			"password":request.GET['password']}
+		r = requests.post("https://coinbase.com/api/v1/users", data=post_data)
+		json_response = json.dumps({"success": r.json()['success']})
+		return HttpResponse(json_response)
 
 # Return list of all clients
 def get_clients(request):
