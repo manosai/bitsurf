@@ -17,7 +17,8 @@ def aws_connect():
 def home(request):
     return render_to_response('login.html', {}, RequestContext(request))
 
-def add_user(request):
+# Existing user sign in
+def get_user(request):
 	if request.method == 'GET':
 		conn = aws_connect()
 		user_domain = conn.get_domain('user_table')
@@ -32,6 +33,11 @@ def add_user(request):
 			json_response = json.dumps({'current_balance':current_balance})
 		return HttpResponse(json_response)
 
+# New user signup
+def add_user(request):
+	pass
+
+# Return list of all clients
 def get_clients(request): 
 	if request.method == 'GET': 
 		conn = aws_connect()
