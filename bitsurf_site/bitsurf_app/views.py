@@ -95,7 +95,7 @@ def send_payment(bitcoin_address, amount):
 
 	return HttpResponse(json_response)
 	
-#Do later
+#TODO: Add business registration workflow
 def business_register(request):
 	if request.method == 'POST':
 		website = request.POST['website']
@@ -108,7 +108,8 @@ def business_register(request):
 			bus_attrs = {'rate':request.POST['rate']}
 			business_domain.put_attributes(website, bus_attrs)
 			return HttpResponseRedirect("https://coinbase.com/checkouts/321d8ede9082981b1ea1c79cd261d66d")
-#Do later
+
+#TODO: Add business home redirect
 def business_home(request):
 	if request.method == 'GET':
 		return render_to_response('admin_home.html', {'website': website, \
