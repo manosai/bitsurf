@@ -31,6 +31,7 @@ def get_user(request):
 		else:
 			current_balance = current_attrs['current_balance']
 			json_response = json.dumps({'current_balance':current_balance})
+		print json_response
 		return HttpResponse(json_response)
 
 # New user signup
