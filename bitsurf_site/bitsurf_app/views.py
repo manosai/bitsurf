@@ -59,6 +59,7 @@ def get_clients(request):
         json_response = json.dumps(output)
         return HttpResponse(json_response)
 
+# Send payment via Coinbase API
 def send_payment(request):
 	if request.method == 'GET':
 		conn = aws_connect()
