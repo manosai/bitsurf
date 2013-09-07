@@ -78,7 +78,7 @@ def send_payment(bitcoin_address, amount):
 	transaction_dic = {}
 	account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
 	transaction = account.send(bitcoin_address, amount)
-	transaction_dic['transaction_status'] = str(transaction.status))
+	transaction_dic['transaction_status'] = str(transaction.status)
 	
 	# add to user's balance 
 	user_domain = conn.get_domain('user_table')
