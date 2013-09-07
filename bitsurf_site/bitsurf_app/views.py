@@ -53,11 +53,11 @@ def get_clients(request):
         output = {}
         for attrs in rs:
 			website = rs.item_name
-            output[website] = attrs['rate']
+        	output[website] = attrs['rate']
         json_response = json.dumps(output)
         return HttpResponse(json_response)
 
-# Update user balance and 
+# Update user balance and call send_payment
 def update_balance(request):
 	if request.method == 'GET': 
 		conn = aws_connect()
