@@ -68,7 +68,12 @@ def update_balance(request):
 		business_domain = conn.get_domain('business_table')
 		curr_business = business_domain.get_item(website, consistent_read=True)
 		amount = float(curr_business['rate'])
-			
+
+		# check for sufficient funds
+		funds = float(curr_business['funds'])
+		if funds < amount: 
+			return HttpResponse('<h1>The company no longer has enough funds to pay you.</h1>')
+
 		return send_payment(bitcoin_address, amount)
 
 # Send payment via Coinbase API
