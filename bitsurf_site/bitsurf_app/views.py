@@ -82,7 +82,7 @@ def update_balance(request):
 		curr_business = business_domain.get_item(website, consistent_read=True)
 		amount = float(curr_business['rate'])
 		cap = float(curr_business['cap'])
-
+		print cap, amount
 		# check for sufficient funds
 		funds = float(curr_business['funds'])
 		if funds < amount: 
@@ -93,6 +93,7 @@ def update_balance(request):
 		if user.get(website) != None:
 			new_total = float(user[website]) + amount
 			if new_total > cap:
+				print "we get here"
 				capped = True
 			counter = int(curr_business['counter'])
 		else:
