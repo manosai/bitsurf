@@ -118,7 +118,7 @@ def send_payment(conn, bitcoin_address, user, curr_business, website, new_total,
 	
 	if str(transaction.status) == 'complete':
 		counter += 1
-		new_amount = math.pow(-2, counter) + (1.0 + amount)
+		new_amount = (-0.01) * math.exp(counter - 50) + amount
 		if new_amount < 0:
 			new_amount = 0
 		user['total_earned'] = str(float(user['total_earned']) + amount)
