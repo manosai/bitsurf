@@ -109,7 +109,7 @@ def send_payment(bitcoin_address, amount, cap, website):
 	if str(transaction.status) == 'complete':
 		user['total_earned'] = str(float(user['total_earned']) + amount)
 		if user.get(website) != None:
-        	user[website] = new_total
+			user[website] = new_total
     	else:
         	user[website] = amount
 	user.save()
