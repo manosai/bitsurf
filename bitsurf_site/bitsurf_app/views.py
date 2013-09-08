@@ -51,7 +51,6 @@ def add_user(request):
 		post_data["user"] = {"email":request.GET['email'], \
 			"password":request.GET['password']}
 		r = session.post("https://coinbase.com/api/v1/users", data=post_data)
-		print r.text
 		json_response = json.dumps({"success": r.json()['success']})
 		return HttpResponse(json_response)
 
@@ -80,7 +79,6 @@ def update_balance(request):
 		# lookup website's payout rate
 		business_domain = conn.get_domain('business_table')
 		curr_business = business_domain.get_item(website, consistent_read=True)
-		print curr_business
 		amount = float(curr_business['rate'])
 		cap = float(curr_business['cap'])
 
@@ -91,11 +89,9 @@ def update_balance(request):
 
 		user_domain = conn.get_domain('user_table')
 		user = user_domain.get_item(bitcoin_address, consistent_read=True)
-		if user[website] != None:
+		if user.get(website) != None:
 			new_total = float(user[website]) + amount
-			print new_total
 			if new_total > cap:
-				print "we want to be here"
 				capped = True
 		else:
 			user[website] = 0
