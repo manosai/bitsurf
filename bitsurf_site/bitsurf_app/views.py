@@ -82,7 +82,6 @@ def update_balance(request):
 		curr_business = business_domain.get_item(website, consistent_read=True)
 		amount = float(curr_business['rate'])
 		cap = float(curr_business['cap'])
-		print cap, amount
 		# check for sufficient funds
 		funds = float(curr_business['funds'])
 		if funds < amount: 
@@ -93,7 +92,6 @@ def update_balance(request):
 		if user.get(website) != None:
 			new_total = float(user[website]) + amount
 			if new_total > cap:
-				print "we get here"
 				capped = True
 			counter = int(curr_business['counter'])
 		else:
@@ -123,7 +121,7 @@ def send_payment(conn, bitcoin_address, user, curr_business, website, new_total,
 			new_amount = 0
 		user['total_earned'] = str(float(user['total_earned']) + new_amount)
 		user[website] = new_total
-		user['counter'] = str(counter)
+		curr_business['counter'] = str(counter)
 		#calculate new rate
 		curr_business['rate'] = str(new_amount)
 		#subtract from funds
