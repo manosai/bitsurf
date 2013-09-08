@@ -18,7 +18,7 @@ def sanitization(orig):
 		return orig
 
 def aws_connect():
-	conn = boto.sdb.connect_to_region('us-west-1',\
+	conn = boto.sdb.connect_to_region('us-east-1',\
 		aws_access_key_id=os.environ['aws_access_key_id'], \
 		aws_secret_access_key=os.environ['aws_secret_access_key'])
 	return conn
@@ -77,7 +77,6 @@ def update_balance(request):
 		bitcoin_address = request.GET["bitcoin_addr"]
 		bitcoin_address = sanitization(bitcoin_address)
 		website = request.GET["website"]
-		print website
 		# lookup website's payout rate
 		business_domain = conn.get_domain('business_table')
 		curr_business = business_domain.get_item(website, consistent_read=True)
@@ -92,7 +91,6 @@ def update_balance(request):
 			capped = True
 			return HttpResponse(json.dumps({'capped': True}))
 
-		print bitcoin_address
 		user_domain = conn.get_domain('user_table')
 		user = user_domain.get_item(bitcoin_address, consistent_read=True)
 
@@ -101,7 +99,6 @@ def update_balance(request):
 			if new_total > cap:
 				capped = True
 		else:
-			print website
 			new_total = amount
 		try:
 			counter = int(curr_business['counter'])
