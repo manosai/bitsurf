@@ -24,7 +24,10 @@ def get_user(request):
 		conn = aws_connect()
 		user_domain = conn.get_domain('user_table')
 		bitcoin_address = urllib.unquote(request.GET['bitcoin_addr'])
-		bitcoin_address = bitcoin_address.split("&")[0] + bitcoin_address.split(";")[1]
+		try:
+			bitcoin_address = bitcoin_address.split("&")[0] + bitcoin_address.split(";")[1]
+		except:
+			pass
 		current_attrs = user_domain.get_item(bitcoin_address, consistent_read=True)
 		if  current_attrs == None:
 			attrs = {'total_earned':0}
