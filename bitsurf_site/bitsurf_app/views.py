@@ -78,39 +78,48 @@ def update_balance(request):
 		curr_business = business_domain.get_item(website, consistent_read=True)
 		print curr_business
 		amount = float(curr_business['rate'])
+		cap = float(curr_business['cap'])
 
 		# check for sufficient funds
 		funds = float(curr_business['funds'])
 		if funds < amount: 
 			return HttpResponse('<h1>The company no longer has enough funds to pay you.</h1>')
 
-		return send_payment(bitcoin_address, amount, website)
+		return send_payment(bitcoin_address, amount, cap, website)
 
 # Send payment via Coinbase API
-def send_payment(bitcoin_address, amount, website):
+def send_payment(bitcoin_address, amount, cap, website):
 	conn = aws_connect()
 	transaction_dic = {}
 	account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
 	bitcoin_address = sanitization(bitcoin_address)
-	print bitcoin_address, amount
-	transaction = account.send(bitcoin_address, amount)
-	transaction_dic['transaction_status'] = str(transaction.status)
 	
-	# add to user's balance 
 	user_domain = conn.get_domain('user_table')
 	user = user_domain.get_item(bitcoin_address, consistent_read=True)
-	user['total_earned'] = str(float(user['total_earned']) + amount)
+
 	if user.get(website) != None:
-		user[website] = str(float(user[website]) + amount)
-	else:
-		user[website] = amount
+		new_total = str(float(user[website]) + amount)
+		if new_total >= cap: 
+			return HttpResponse('<h1>This company says no mo fo you</h1>')
+
+	# send actual payment
+	transaction = account.send(bitcoin_address, amount)
+    transaction_dic['transaction_status'] = str(transaction.status)
+	
+	if str(transaction.status) == 'complete':
+		user['total_earned'] = str(float(user['total_earned']) + amount)
+		if user.get(website) != None:
+        	user[website] = new_total
+    	else:
+        	user[website] = amount
 	user.save()
+
 	transaction_dic['total_earned'] = user['total_earned']
 	json_response = json.dumps(transaction_dic)
 
 	return HttpResponse(json_response)
 
-#Do later
+#TODO: Add business registering
 def business_register(request):
 	if request.method == 'POST':
 		website = request.POST['website']
