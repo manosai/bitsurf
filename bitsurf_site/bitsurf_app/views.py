@@ -9,6 +9,13 @@ from django.shortcuts import render_to_response
 import boto.sdb
 from coinbase import CoinbaseAccount
 
+def sanitization(orig):
+	try:
+		new = orig.split("&")[0] + orig.split(";")[1]
+		return new
+	except:
+		return orig
+
 def aws_connect():
 	conn = boto.sdb.connect_to_region('us-west-1',\
 		aws_access_key_id=os.environ['aws_access_key_id'], \
@@ -24,10 +31,7 @@ def get_user(request):
 		conn = aws_connect()
 		user_domain = conn.get_domain('user_table')
 		bitcoin_address = urllib.unquote(request.GET['bitcoin_addr'])
-		try:
-			bitcoin_address = bitcoin_address.split("&")[0] + bitcoin_address.split(";")[1]
-		except:
-			pass
+		bitcoin_address = sanitization(bitcoin_address)
 		current_attrs = user_domain.get_item(bitcoin_address, consistent_read=True)
 		if  current_attrs == None:
 			attrs = {'total_earned':0}
@@ -87,10 +91,7 @@ def send_payment(bitcoin_address, amount, website):
 	conn = aws_connect()
 	transaction_dic = {}
 	account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
-	try:
-		bitcoin_address = bitcoin_address.split("&")[0] + bitcoin_address.split(";")[1]
-	except:
-		pass
+	bitcoin_address = sanitization(bitcoin_address)
 	transaction = account.send(bitcoin_address, amount)
 	transaction_dic['transaction_status'] = str(transaction.status)
 	
