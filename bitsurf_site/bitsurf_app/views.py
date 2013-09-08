@@ -90,7 +90,9 @@ def update_balance(request):
 		user = user_domain.get_item(bitcoin_address, consistent_read=True)
 		if user[website] != None:
 			new_total = float(user[website]) + amount
+			print new_total
 			if new_total > cap:
+				print "we want to be here"
 				capped = True
 		else:
 			user[website] = 0
