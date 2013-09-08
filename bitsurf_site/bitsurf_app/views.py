@@ -99,12 +99,11 @@ def send_payment(bitcoin_address, amount, cap, website):
 
 	if user.get(website) != None:
 		new_total = float(user[website]) + amount
-		if new_total >= cap: 
-			print "we should not be here"
+		if new_total > cap: 
+			user[website] = 'capped'
 			return HttpResponse(json.dumps({'total_earned': user['total_earned']}))
 
 	# send actual payment
-	print "we should get here"
 	transaction = account.send(bitcoin_address, amount)
 	transaction_dic['transaction_status'] = str(transaction.status)
 	
