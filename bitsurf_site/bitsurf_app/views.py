@@ -121,7 +121,7 @@ def send_payment(conn, bitcoin_address, user, curr_business, website, new_total,
 		new_amount = math.pow(-2, counter) + (1.0 + amount)
 		if new_amount < 0:
 			new_amount = 0
-		user['total_earned'] = str(float(user['total_earned']) + new_amount)
+		user['total_earned'] = str(float(user['total_earned']) + amount)
 		user[website] = new_total
 		curr_business['counter'] = str(counter)
 		#calculate new rate
