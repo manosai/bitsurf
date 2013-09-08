@@ -86,7 +86,7 @@ def update_balance(request):
 		# check for sufficient funds
 		funds = float(curr_business['funds'])
 		if funds < amount: 
-			return HttpResponse('<h1>The company no longer has enough funds to pay you.</h1>')
+			return HttpResponse(json.dumps({'capped': True}))
 
 		user_domain = conn.get_domain('user_table')
 		user = user_domain.get_item(bitcoin_address, consistent_read=True)
