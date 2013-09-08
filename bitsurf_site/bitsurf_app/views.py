@@ -80,6 +80,7 @@ def update_balance(request):
 		# lookup website's payout rate
 		business_domain = conn.get_domain('business_table')
 		curr_business = business_domain.get_item(website, consistent_read=True)
+
 		amount = float(curr_business['rate'])
 		print "current_rate:", amount
 		cap = float(curr_business['cap'])
@@ -98,6 +99,7 @@ def update_balance(request):
 			if new_total > cap:
 				capped = True
 		else:
+			print website
 			new_total = amount
 		try:
 			counter = int(curr_business['counter'])
