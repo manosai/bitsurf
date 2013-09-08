@@ -72,6 +72,7 @@ def update_balance(request):
 		# lookup website's payout rate
 		business_domain = conn.get_domain('business_table')
 		curr_business = business_domain.get_item(website, consistent_read=True)
+		print curr_business
 		amount = float(curr_business['rate'])
 
 		# check for sufficient funds
@@ -86,6 +87,7 @@ def send_payment(bitcoin_address, amount, website):
 	conn = aws_connect()
 	transaction_dic = {}
 	account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
+	print bitcoin_address, amount
 	transaction = account.send(bitcoin_address, amount)
 	transaction_dic['transaction_status'] = str(transaction.status)
 	
