@@ -97,9 +97,15 @@ def update_balance(request):
 			counter = int(curr_business['counter'])
 		else:
 			new_total = amount
-			print new_total
 			counter = 0
 		if capped:
+			counter += 1
+			new_amount = (-30) * math.exp(counter - 15) + amount
+			if new_amount < 0:
+				new_amount = 0
+			curr_business['counter'] = str(counter)
+			curr_business['rate'] = str(new_amount)
+			curr_business.save()
 			return HttpResponse(json.dumps({'total_earned': user['total_earned'],
 				'capped': True}))
 		else:
@@ -118,7 +124,7 @@ def send_payment(conn, bitcoin_address, user, curr_business, website, new_total,
 	
 	if str(transaction.status) == 'complete':
 		counter += 1
-		new_amount = (-0.01) * math.exp(counter - 50) + amount
+		new_amount = (-30) * math.exp(counter - 15) + amount
 		if new_amount < 0:
 			new_amount = 0
 		user['total_earned'] = str(float(user['total_earned']) + amount)
