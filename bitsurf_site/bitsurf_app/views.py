@@ -98,7 +98,7 @@ def send_payment(bitcoin_address, amount, cap, website):
 	user = user_domain.get_item(bitcoin_address, consistent_read=True)
 
 	if user.get(website) != None:
-		new_total = str(float(user[website]) + amount)
+		new_total = float(user[website]) + amount
 		if new_total >= cap: 
 			print "we should not be here"
 			return HttpResponse(json.dumps({'total_earned': user['total_earned']}))
