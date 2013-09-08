@@ -49,6 +49,7 @@ def add_user(request):
 		post_data["user"] = {"email":request.GET['email'], \
 			"password":request.GET['password']}
 		r = requests.post("https://coinbase.com/api/v1/users", data=post_data)
+		print r.text
 		json_response = json.dumps({"success": r.json()['success']})
 		return HttpResponse(json_response)
 
