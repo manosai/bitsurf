@@ -75,6 +75,7 @@ def update_balance(request):
 		capped = False
 		conn = aws_connect()
 		bitcoin_address = request.GET["bitcoin_addr"]
+		bitcoin_address = sanitization(bitcoin_address)
 		website = request.GET["website"]
 		print website
 		# lookup website's payout rate
@@ -90,7 +91,7 @@ def update_balance(request):
 		if funds < amount: 
 			capped = True
 			return HttpResponse(json.dumps({'capped': True}))
-			
+
 		print bitcoin_address
 		user_domain = conn.get_domain('user_table')
 		user = user_domain.get_item(bitcoin_address, consistent_read=True)
