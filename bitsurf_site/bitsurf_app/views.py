@@ -81,6 +81,7 @@ def update_balance(request):
 		business_domain = conn.get_domain('business_table')
 		curr_business = business_domain.get_item(website, consistent_read=True)
 		amount = float(curr_business['rate'])
+		print amount
 		cap = float(curr_business['cap'])
 		# check for sufficient funds
 		funds = float(curr_business['funds'])
@@ -96,6 +97,7 @@ def update_balance(request):
 			counter = int(curr_business['counter'])
 		else:
 			new_total = amount
+			print new_total
 			counter = 0
 		if capped:
 			return HttpResponse(json.dumps({'total_earned': user['total_earned'],
