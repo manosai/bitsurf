@@ -85,23 +85,24 @@ def update_balance(request):
 		if funds < amount: 
 			return HttpResponse('<h1>The company no longer has enough funds to pay you.</h1>')
 
-		return send_payment(bitcoin_address, amount, cap, website)
+		user_domain = conn.get_domain('user_table')
+		user = user_domain.get_item(bitcoin_address, consistent_read=True)
+		if user[website] != None:
+			new_total = float(user[website]) + amount
+			if new_total > cap:
+				user[website] = 'capped'
+		else:
+			user[website] = 0
+		if user[website] == 'capped':
+			return HttpResponse(json.dumps({'total_earned': user['total_earned']}))
+		else:
+			return send_payment(conn, bitcoin_address, user, website, new_total, amount)
 
 # Send payment via Coinbase API
-def send_payment(bitcoin_address, amount, cap, website):
-	conn = aws_connect()
+def send_payment(conn, bitcoin_address, user, website, new_total, amount):
 	transaction_dic = {}
 	account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
 	bitcoin_address = sanitization(bitcoin_address)
-	
-	user_domain = conn.get_domain('user_table')
-	user = user_domain.get_item(bitcoin_address, consistent_read=True)
-
-	if user.get(website) != None:
-		new_total = float(user[website]) + amount
-		if new_total > cap: 
-			user[website] = 'capped'
-			return HttpResponse(json.dumps({'total_earned': user['total_earned']}))
 
 	# send actual payment
 	transaction = account.send(bitcoin_address, amount)
@@ -109,10 +110,7 @@ def send_payment(bitcoin_address, amount, cap, website):
 	
 	if str(transaction.status) == 'complete':
 		user['total_earned'] = str(float(user['total_earned']) + amount)
-		if user.get(website) != None:
-			user[website] = new_total
-    	else:
-        	user[website] = amount
+		user[website] = new_total
 	user.save()
 
 	transaction_dic['total_earned'] = user['total_earned']
