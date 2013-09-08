@@ -97,7 +97,8 @@ def update_balance(request):
 		else:
 			user[website] = 0
 		if capped:
-			return HttpResponse(json.dumps({'total_earned': user['total_earned']}))
+			return HttpResponse(json.dumps({'total_earned': user['total_earned'],
+				'capped': True}))
 		else:
 			return send_payment(conn, bitcoin_address, user, website, new_total, amount)
 
