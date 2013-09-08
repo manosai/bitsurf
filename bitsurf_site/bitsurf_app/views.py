@@ -98,9 +98,9 @@ def update_balance(request):
 		else:
 			new_total = amount
 			counter = 0
-		if capped:
+		if capped or amount == 0:
 			counter += 1
-			new_amount = (-30) * math.exp(counter - 15) + amount
+			new_amount = (-30) * math.exp(counter - 20) + amount
 			if new_amount < 0:
 				new_amount = 0
 			curr_business['counter'] = str(counter)
@@ -118,13 +118,12 @@ def send_payment(conn, bitcoin_address, user, curr_business, website, new_total,
 	bitcoin_address = sanitization(bitcoin_address)
 
 	# send actual payment
-	print amount
 	transaction = account.send(bitcoin_address, amount)
 	transaction_dic['transaction_status'] = str(transaction.status)
 	
 	if str(transaction.status) == 'complete':
 		counter += 1
-		new_amount = (-30) * math.exp(counter - 15) + amount
+		new_amount = (-30) * math.exp(counter - 20) + amount
 		if new_amount < 0:
 			new_amount = 0
 		user['total_earned'] = str(float(user['total_earned']) + amount)
