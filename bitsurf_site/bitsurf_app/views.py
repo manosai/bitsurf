@@ -81,24 +81,30 @@ def update_balance(request):
 		business_domain = conn.get_domain('business_table')
 		curr_business = business_domain.get_item(website, consistent_read=True)
 		amount = float(curr_business['rate'])
-		print amount
+		print "current_rate:", amount
 		cap = float(curr_business['cap'])
+
 		# check for sufficient funds
 		funds = float(curr_business['funds'])
 		if funds < amount: 
+			capped = True
 			return HttpResponse(json.dumps({'capped': True}))
 
 		user_domain = conn.get_domain('user_table')
 		user = user_domain.get_item(bitcoin_address, consistent_read=True)
+
 		if user.get(website) != None:
 			new_total = float(user[website]) + amount
 			if new_total > cap:
 				capped = True
-			counter = int(curr_business['counter'])
 		else:
 			new_total = amount
+		try:
+			counter = int(curr_business['counter'])
+		except:
 			counter = 0
 		if capped or amount == 0:
+			print "we are capped or at rate 0"
 			counter += 1
 			new_amount = (-30) * math.exp(counter - 20) + amount
 			if new_amount < 0:
@@ -118,6 +124,7 @@ def send_payment(conn, bitcoin_address, user, curr_business, website, new_total,
 	bitcoin_address = sanitization(bitcoin_address)
 
 	# send actual payment
+	print "send_amount :", amount
 	transaction = account.send(bitcoin_address, amount)
 	transaction_dic['transaction_status'] = str(transaction.status)
 	
@@ -132,7 +139,7 @@ def send_payment(conn, bitcoin_address, user, curr_business, website, new_total,
 		#calculate new rate
 		curr_business['rate'] = str(new_amount)
 		#subtract from funds
-		curr_business['funds'] = str(float(curr_business['funds']) - new_amount)
+		curr_business['funds'] = str(float(curr_business['funds']) - amount)
 	user.save()
 	curr_business.save()
 	transaction_dic['total_earned'] = user['total_earned']
