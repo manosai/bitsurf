@@ -2,6 +2,7 @@ import json
 import os
 import requests
 import urllib
+import math
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
@@ -93,31 +94,39 @@ def update_balance(request):
 			new_total = float(user[website]) + amount
 			if new_total > cap:
 				capped = True
+			counter = int(curr_business['counter'])
 		else:
 			new_total = amount
+			counter = 0
 		if capped:
 			return HttpResponse(json.dumps({'total_earned': user['total_earned'],
 				'capped': True}))
 		else:
-			return send_payment(conn, bitcoin_address, user, curr_business, website, new_total, amount)
+			return send_payment(conn, bitcoin_address, user, curr_business, website, new_total, amount, counter)
 
 # Send payment via Coinbase API
-def send_payment(conn, bitcoin_address, user, curr_business, website, new_total, amount):
+def send_payment(conn, bitcoin_address, user, curr_business, website, new_total, amount, counter):
 	transaction_dic = {}
 	account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
 	bitcoin_address = sanitization(bitcoin_address)
 
 	# send actual payment
+	print amount
 	transaction = account.send(bitcoin_address, amount)
 	transaction_dic['transaction_status'] = str(transaction.status)
 	
 	if str(transaction.status) == 'complete':
-		user['total_earned'] = str(float(user['total_earned']) + amount)
+		counter += 1
+		new_amount = math.pow(-2, counter) + (1.0 + amount)
+		if new_amount < 0:
+			new_amount = 0
+		user['total_earned'] = str(float(user['total_earned']) + new_amount)
 		user[website] = new_total
+		user['counter'] = str(counter)
 		#calculate new rate
-		new_rate = amount 
-		curr_business['rate'] = new_rate
+		curr_business['rate'] = str(new_amount)
 		#subtract from funds
+		curr_business['funds'] = str(float(curr_business['funds']) - new_amount)
 	user.save()
 	curr_business.save()
 	transaction_dic['total_earned'] = user['total_earned']
