@@ -118,7 +118,7 @@ def send_payment(conn, bitcoin_address, user, website, new_total, amount):
 	user.save()
 
 	transaction_dic['total_earned'] = user['total_earned']
-	transaction_dic['capped'] = True
+	transaction_dic['capped'] = False
 	json_response = json.dumps(transaction_dic)
 
 	return HttpResponse(json_response)
