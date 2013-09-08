@@ -94,7 +94,7 @@ def update_balance(request):
 			if new_total > cap:
 				capped = True
 		else:
-			user[website] = 0
+			new_total = amount
 		if capped:
 			return HttpResponse(json.dumps({'total_earned': user['total_earned'],
 				'capped': True}))
