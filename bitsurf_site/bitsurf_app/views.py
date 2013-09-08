@@ -69,6 +69,7 @@ def get_clients(request):
 # Update user balance and call send_payment
 def update_balance(request):
 	if request.method == 'GET': 
+		capped = False
 		conn = aws_connect()
 		bitcoin_address = request.GET["bitcoin_addr"]
 		website = request.GET["website"]
@@ -90,10 +91,10 @@ def update_balance(request):
 		if user[website] != None:
 			new_total = float(user[website]) + amount
 			if new_total > cap:
-				user[website] = 'capped'
+				capped = True
 		else:
 			user[website] = 0
-		if user[website] == 'capped':
+		if capped:
 			return HttpResponse(json.dumps({'total_earned': user['total_earned']}))
 		else:
 			return send_payment(conn, bitcoin_address, user, website, new_total, amount)
