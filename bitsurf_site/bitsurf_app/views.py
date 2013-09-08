@@ -87,7 +87,10 @@ def send_payment(bitcoin_address, amount, website):
 	conn = aws_connect()
 	transaction_dic = {}
 	account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
-	print bitcoin_address, amount
+	try:
+		bitcoin_address = bitcoin_address.split("&")[0] + bitcoin_address.split(";")[1]
+	except:
+		pass
 	transaction = account.send(bitcoin_address, amount)
 	transaction_dic['transaction_status'] = str(transaction.status)
 	
