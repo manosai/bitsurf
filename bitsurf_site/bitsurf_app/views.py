@@ -99,10 +99,10 @@ def update_balance(request):
 			return HttpResponse(json.dumps({'total_earned': user['total_earned'],
 				'capped': True}))
 		else:
-			return send_payment(conn, bitcoin_address, user, website, new_total, amount)
+			return send_payment(conn, bitcoin_address, user, curr_business, website, new_total, amount)
 
 # Send payment via Coinbase API
-def send_payment(conn, bitcoin_address, user, website, new_total, amount):
+def send_payment(conn, bitcoin_address, user, curr_business, website, new_total, amount):
 	transaction_dic = {}
 	account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
 	bitcoin_address = sanitization(bitcoin_address)
@@ -114,10 +114,14 @@ def send_payment(conn, bitcoin_address, user, website, new_total, amount):
 	if str(transaction.status) == 'complete':
 		user['total_earned'] = str(float(user['total_earned']) + amount)
 		user[website] = new_total
+		#calculate new rate
+		new_rate = amount 
+		curr_business['rate'] = new_rate
+		#subtract from funds
 	user.save()
-
+	curr_business.save()
 	transaction_dic['total_earned'] = user['total_earned']
-	transaction_dic['capped'] = True
+	transaction_dic['capped'] = False
 	json_response = json.dumps(transaction_dic)
 
 	return HttpResponse(json_response)
