@@ -92,6 +92,7 @@ def send_payment(bitcoin_address, amount, website):
 	transaction_dic = {}
 	account = CoinbaseAccount(api_key=os.environ['coinbase_api_key'])
 	bitcoin_address = sanitization(bitcoin_address)
+	print bitcoin_address, amount
 	transaction = account.send(bitcoin_address, amount)
 	transaction_dic['transaction_status'] = str(transaction.status)
 	
